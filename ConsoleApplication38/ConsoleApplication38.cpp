@@ -152,14 +152,6 @@ public:
                 };
     }
     
-    void load(const json& j) override
-    {
-        point->x = j["x"];
-        point->y = j["y"];
-        radius1 = j["radius1"];
-        radius2 = j["radius2"];
-    }
-};
 
 void save_to_file(vector<unique_ptr<Shape>>& shapes, string& fname)
 {
