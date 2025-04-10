@@ -19,7 +19,7 @@ class Shape
 public:
     virtual void show() = 0;
     virtual json save() = 0;
-    virtual void load(json& j) = 0;
+    virtual void load(const json& j) = 0;
     
 };
 class Square :public Shape
@@ -47,7 +47,7 @@ public:
                 { "square",pow(storona,2) } };
     }
     
-    void load(json& j) override
+    void load(const json& j) override
     {
         point->x = j["x"];
         point->y = j["y"];
@@ -79,7 +79,7 @@ public:
                 { "square",4.1415*pow(radius,2) } };
     }
     
-    void load(json& j) override
+    void load(const json& j) override
     {
         point->x = j["x"];
         point->y = j["y"];
@@ -116,7 +116,7 @@ public:
                 { "square",a*b } };
     }
     
-    void load(json& j) override
+    void load(const json& j) override
     {
         point->x = j["x"];
         point->y = j["y"];
@@ -152,7 +152,7 @@ public:
                 };
     }
     
-    void load(json& j) override
+    void load(const json& j) override
     {
         point->x = j["x"];
         point->y = j["y"];
@@ -176,6 +176,54 @@ void save_to_file(vector<unique_ptr<Shape>>& shapes, string& fname)
     }
     else
         cout << "File error!" << endl;
+}
+vector<unique_ptr<Shape>> load_from_file(string& fname)
+{
+    vector<unique_ptr<Shape>>shapes;
+    ifstream rd(fname);
+    json j;
+    rd >> j;
+    for (const auto& item : j)
+    {
+        unique_ptr<Shape> shp;
+        string type = item["type"];
+        if (type == "Square")
+        {
+            auto square=make_unique<Square>();
+            square->load(item);
+            shp = move(square);
+        }
+        else
+        {
+            if (type == "Circle")
+            {
+                auto circle = make_unique<Circle>();
+                circle->load(item);
+                shp = move(circle);
+            }
+            else
+            {
+                if (type == "Rectangle")
+                {
+                    auto rect = make_unique<Rectangle>();
+                    rect->load(item);
+                    shp = move(rect);
+                }
+                else
+                {
+                    auto elp = make_unique<Elips>();
+                    elp->load(item);
+                    shp = move(elp);
+                }
+            }
+            if (shp)
+            {
+                shapes.push_back(shp);
+            }
+
+        }
+        return shapes;
+    }
 }
 
 int main()
