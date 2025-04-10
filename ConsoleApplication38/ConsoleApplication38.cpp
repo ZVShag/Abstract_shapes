@@ -2,7 +2,7 @@
 #include<fstream>
 #include<vector>
 #include <memory>
-#include <nlohmann/json.hpp>
+#include<nlohmann/json.hpp>
 
 using json = nlohmann::json;
 using namespace std;
@@ -75,10 +75,10 @@ public:
                 {"x",point->x},
                 {"y",point->y},
                 {"radius",radius},
-                {"preimetr",3.1415*radius*2},
-                { "square",4.1415*pow(radius,2) } };
+                {"preimetr",3.1415 * radius * 2},
+                { "square",4.1415 * pow(radius,2) } };
     }
-    
+
     void load(const json& j) override
     {
         point->x = j["x"];
@@ -111,11 +111,11 @@ public:
                 {"x",point->x},
                 {"y",point->y},
                 {"storona a",a},
-                {"storona a",b},
+                {"storona b",b},
                 {"preimetr",(a+b)*2},
                 { "square",a*b } };
     }
-    
+
     void load(const json& j) override
     {
         point->x = j["x"];
@@ -130,7 +130,7 @@ class Elips :public Shape
     double radius1;
     double radius2;
 public:
-    Elips(int x, int y, double r1,double r2)
+    Elips(int x, int y, double r1, double r2)
     {
         point = new Point(x, y);
         radius1 = r1;
@@ -149,81 +149,86 @@ public:
                 {"y",point->y},
                 {"radius1",radius1},
                 {"radius2",radius2}
-                };
+        };
     }
-    
-
-void save_to_file(vector<unique_ptr<Shape>>& shapes, string& fname)
-{
-    json jsn;
-    for (const auto& shape : shapes)
+    void load(const json& j) override
     {
-        jsn.push_back(shape->save());
+        point->x = j["x"];
+        point->y = j["y"];
+        radius1 = j["radius 1"];
+        radius2 = j["radius 2"];
+    }
+};
+void save_to_file(const vector<unique_ptr<Shape>>& shape, string& fname)
+{
+    json vector_json;
+    for (const auto& shp : shape)
+    {
+        vector_json.push_back(shp->save());
     }
     ofstream wr(fname);
     if (wr.is_open())
-    {
-        wr << jsn.dump(5);
-        cout << " All shapes save to file!" << endl;
-    }
+        wr << vector_json.dump(2);
     else
-        cout << "File error!" << endl;
+        cout << "File error!";
 }
-vector<unique_ptr<Shape>> load_from_file(string& fname)
+vector<unique_ptr<Shape>> load_from_file(const string& fname)
 {
-    vector<unique_ptr<Shape>>shapes;
+    vector<unique_ptr<Shape>> shape;
     ifstream rd(fname);
-    json j;
-    rd >> j;
-    for (const auto& item : j)
+    json json_vector;
+    rd >> json_vector;
+    for (const auto& i : json_vector)
     {
         unique_ptr<Shape> shp;
-        string type = item["type"];
-        if (type == "Square")
+        if (i["type"] == "Square")
         {
-            auto square=make_unique<Square>();
-            square->load(item);
+            auto square = make_unique<Square>();
+            square->load(i);
             shp = move(square);
         }
         else
         {
-            if (type == "Circle")
+            if (i["type"] == "Circle")
             {
                 auto circle = make_unique<Circle>();
-                circle->load(item);
+                circle->load(i);
                 shp = move(circle);
             }
             else
             {
-                if (type == "Rectangle")
+                if (i["type"] == "Rectangle")
                 {
                     auto rect = make_unique<Rectangle>();
-                    rect->load(item);
+                    rect->load(i);
                     shp = move(rect);
                 }
-                else
-                {
-                    auto elp = make_unique<Elips>();
-                    elp->load(item);
-                    shp = move(elp);
+                else {
+                    if (i["type"] == "Elips")
+                    {
+                        auto elp = make_unique<Elips>();
+                        elp->load(i);
+                        shp = move(elp);
+                    }
                 }
             }
-            if (shp)
-            {
-                shapes.push_back(shp);
-            }
-
         }
-        return shapes;
-    }
-}
+        if (shp)
+            shape.push_back(move(shp));
+       
 
+    }
+    return shape;
+
+}
 int main()
 {
-    vector<unique_ptr<Shape>>shapes;
+    vector<unique_ptr<Shape>> shapes;
     string fname = "shapes.json";
-    shapes.push_back(make_unique<Square>(1, 1, 2));
+    shapes.push_back(make_unique<Square>(1, 1, 4));
     shapes.push_back(make_unique<Circle>(2, 2, 3));
+    shapes.push_back(make_unique<Rectangle>(3, 3, 4.0, 5.0));
+    shapes.push_back(make_unique<Elips>(2, 3, 6, 2));
     save_to_file(shapes, fname);
 
 }

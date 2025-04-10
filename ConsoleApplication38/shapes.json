@@ -1,18 +1,33 @@
 [
-     {
-          "preimetr": 8.0,
-          "square": 4.0,
-          "storona": 2.0,
-          "type:": "Square",
-          "x": 1,
-          "y": 1
-     },
-     {
-          "preimetr": 18.849,
-          "radius": 3.0,
-          "square": 37.2735,
-          "type:": "Circle",
-          "x": 2,
-          "y": 2
-     }
+  {
+    "preimetr": 16.0,
+    "square": 16.0,
+    "storona": 4.0,
+    "type:": "Square",
+    "x": 1,
+    "y": 1
+  },
+  {
+    "preimetr": 18.849,
+    "radius": 3.0,
+    "square": 37.2735,
+    "type:": "Circle",
+    "x": 2,
+    "y": 2
+  },
+  {
+    "preimetr": 18.0,
+    "square": 20.0,
+    "storona a": 4.0,
+    "type:": "Rectangle",
+    "x": 3,
+    "y": 3
+  },
+  {
+    "radius1": 6.0,
+    "radius2": 2.0,
+    "type:": "Elips",
+    "x": 2,
+    "y": 3
+  }
 ]
